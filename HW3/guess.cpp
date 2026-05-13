@@ -12,7 +12,7 @@ int guess(int target_value) {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
-        counter++;
+        ++counter;
         std::cin >> current_value;
         if (current_value < target_value) {
             std::cout << "The value is greater than " << current_value << std::endl;
