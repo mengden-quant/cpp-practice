@@ -12,7 +12,6 @@ void Physics::setWorldBox(const Point& topLeft, const Point& bottomRight) {
 }
 
 void Physics::update(std::vector<Ball>& balls, const size_t ticks) const {
-
     for (size_t i = 0; i < ticks; ++i) {
         move(balls);
         collideWithBox(balls);
@@ -22,6 +21,7 @@ void Physics::update(std::vector<Ball>& balls, const size_t ticks) const {
 
 void Physics::collideBalls(std::vector<Ball>& balls) const {
     for (auto a = balls.begin(); a != balls.end(); ++a) {
+        if (!a->getisCollidable()) {continue;}
         for (auto b = std::next(a); b != balls.end(); ++b) {
             const double distanceBetweenCenters2 =
                 distance2(a->getCenter(), b->getCenter());
@@ -38,6 +38,7 @@ void Physics::collideBalls(std::vector<Ball>& balls) const {
 
 void Physics::collideWithBox(std::vector<Ball>& balls) const {
     for (Ball& ball : balls) {
+        if (!ball.getisCollidable()) {continue;}
         const Point p = ball.getCenter();
         const double r = ball.getRadius();
         // определяет, находится ли v в диапазоне (lo, hi) (не включая границы)
@@ -80,6 +81,7 @@ void Physics::processCollision(Ball& a, Ball& b,
         2 * (dot(aV, normal) - dot(bV, normal)) / (a.getMass() + b.getMass());
 
     // задаем новые скорости мячей после столкновения
+    if (a.getisCollidable() && b.getisCollidable()) {
     a.setVelocity(Velocity(aV - normal * p * a.getMass()));
-    b.setVelocity(Velocity(bV + normal * p * b.getMass()));
+    b.setVelocity(Velocity(bV + normal * p * b.getMass()));}
 }
