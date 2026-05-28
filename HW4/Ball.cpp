@@ -68,4 +68,6 @@ bool Ball::getisCollidable() const {
     return collidable;
 }
 
-
+ Color Ball::getColor() const {
+    return color;
+ }

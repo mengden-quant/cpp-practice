@@ -11,15 +11,21 @@ void Physics::setWorldBox(const Point& topLeft, const Point& bottomRight) {
     this->bottomRight = bottomRight;
 }
 
-void Physics::update(std::vector<Ball>& balls, const size_t ticks) const {
+std::vector<Collision> Physics::update(std::vector<Ball>& balls, const size_t ticks) const {
+    std::vector<Collision> collisions;
     for (size_t i = 0; i < ticks; ++i) {
         move(balls);
         collideWithBox(balls);
-        collideBalls(balls);
+        std::vector<Collision> newCollision = collideBalls(balls);
+        for (const Collision& collision: newCollision) {
+            collisions.push_back(collision);
+        }
     }
+    return collisions;
 }
 
-void Physics::collideBalls(std::vector<Ball>& balls) const {
+std::vector<Collision> Physics::collideBalls(std::vector<Ball>& balls) const {
+    std::vector<Collision> collisions;
     for (auto a = balls.begin(); a != balls.end(); ++a) {
         if (!a->getisCollidable()) {continue;}
         for (auto b = std::next(a); b != balls.end(); ++b) {
@@ -30,10 +36,20 @@ void Physics::collideBalls(std::vector<Ball>& balls) const {
                 collisionDistance * collisionDistance;
 
             if (distanceBetweenCenters2 < collisionDistance2) {
+                const Point aV = a->getVelocity().vector();
+                const Point bV = b->getVelocity().vector();
+                const double impactSpeed = std::sqrt(distance2(aV, bV));
                 processCollision(*a, *b, distanceBetweenCenters2);
+                Collision collision;
+                collision.point = (a->getCenter() + b->getCenter()) / 2.0;
+                collision.radius = a->getRadius() / 5.0;
+                collision.color = a->getColor();
+                collision.velocity = impactSpeed;
+                collisions.push_back(collision);
             }
         }
     }
+    return collisions;
 }
 
 void Physics::collideWithBox(std::vector<Ball>& balls) const {

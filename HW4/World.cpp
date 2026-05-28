@@ -1,7 +1,9 @@
 #include "World.hpp"
 #include "Painter.hpp"
+#include "Constants.hpp"
 #include <fstream>
 #include <stdexcept>
+#include <algorithm>
 
 // Длительность одного тика симуляции.
 // Подробнее см. update()
@@ -62,6 +64,9 @@ void World::show(Painter& painter) const {
     // мира
     painter.draw(topLeft, bottomRight, Color(1, 1, 1));
 
+    for (const Dust& dust : dusts) {
+       dust.draw(painter);
+    }
     // Вызываем отрисовку каждого шара
     for (const Ball& ball : balls) {
         ball.draw(painter);
@@ -90,5 +95,26 @@ void World::update(double time) {
     const auto ticks = static_cast<size_t>(std::floor(time / timePerTick));
     restTime = time - double(ticks) * timePerTick;
 
-    physics.update(balls, ticks);
+    std::vector<Collision> collisions = physics.update(balls, ticks);
+    for (const Collision& collision : collisions) {
+        const double numDusts = 10.0;
+        for (int i = 0; i < static_cast<int>(numDusts); ++i) {
+            const double angle = i * 2.0 * Constants::PI / numDusts;
+            Dust dust(collision.radius, collision.color);
+            dust.setCenter(collision.point);
+            const double dustVelocity = collision.velocity * 0.8;
+            dust.setVelocity(Velocity(dustVelocity, angle));
+            dusts.push_back(dust);
+        }
+    }
+    for (Dust& dust: dusts) {
+        dust.move(double(ticks) * timePerTick);
+    }
+    dusts.erase(
+        std::remove_if(dusts.begin(), dusts.end(),
+        [](const Dust& dust) {
+            return !dust.isAlive();
+        }),
+        dusts.end()
+    );
 }

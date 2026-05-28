@@ -3,25 +3,23 @@
 #include "Point.hpp"
 #include "Velocity.hpp"
 
-class Ball {
+class Dust {
 public:
-    Ball() = default;
-    inline Ball(double radius, Color color, bool collidable) : 
-    radius{radius}, color{color}, collidable{collidable} {};
+    Dust() = default;
+    inline Dust(double radius, Color color) : radius{radius}, color{color} {};
     void setVelocity(const Velocity& newVelocity);
     Velocity getVelocity() const;
     void draw(Painter& painter) const;
     void setCenter(const Point& newCenter);
     Point getCenter() const;
     double getRadius() const;
-    double getMass() const;
-    bool getisCollidable() const;
-    Color getColor() const;
+    void move(double time);
+    bool isAlive() const;
 
 private:
     Velocity velocity;
     Point center;
     double radius;
     Color color;
-    bool collidable;
+    double lifetime{1.2};
 };
