@@ -6,85 +6,72 @@
 
 class IStatistics {
 public:
+    explicit IStatistics(const char* statistic_name, double value = 0.0)
+	    : m_name{statistic_name}, m_value{value} {};
 	virtual ~IStatistics() {}
 
 	virtual void update(double next) = 0;
 	virtual double eval() const = 0;
-	virtual const char * name() const = 0;
+	const char * name() {return m_name;}
+
+protected:
+    const char* m_name;
+	double m_value;
 };
 
 class Min : public IStatistics {
 public:
-	Min() : m_min{std::numeric_limits<double>::max()} {
+	Min() : IStatistics{"min", std::numeric_limits<double>::max()} {
 	}
 
 	void update(double next) override {
-		if (next < m_min) {
-			m_min = next;
+		if (next < m_value) {
+			m_value = next;
 		}
 	}
 
 	double eval() const override {
-		return m_min;
+		return m_value;
 	}
-
-	const char * name() const override {
-		return "min";
-	}
-
-private:
-	double m_min;
 };
 
 class Max: public IStatistics {
 	public:
-	    Max(): m_max{std::numeric_limits<double>::lowest()} {
+	    Max(): IStatistics{"max", std::numeric_limits<double>::lowest()} {
 		}
 
 		void update(double next) override {
-			if (next > m_max) {
-				m_max = next;
+			if (next > m_value) {
+				m_value = next;
 			}
 		}
 
 		double eval() const override {
-			return m_max;
+			return m_value;
 		}
-
-		const char * name() const override {
-			return "max";
-		}
-
-private:
-    double m_max;
 };
 
 class Mean: public IStatistics {
 	public:
-	    Mean(): m_mean{0} {
+	    Mean(): IStatistics{"mean", 0.0}, counter{0} {
 		}
 
 		void update(double next) override {
 			counter++;
-			m_mean += (next - m_mean) / counter;
+			m_value += (next - m_value) / counter;
 		}
 
 		double eval() const override {
-			return m_mean;
-		}
-
-		const char * name() const override {
-			return "mean";
+			return m_value;
 		}
 
 private:
-    double m_mean;
-	size_t counter{0};
+	size_t counter;
 };
 
 class Std: public IStatistics {
 	public:
-	    Std(): m_std{0} {
+	    Std(): IStatistics{"std", 0.0}, m_mean{0.0}, m_m2{0.0}, counter{0} {
 		}
 
 		void update(double next) override {
@@ -93,28 +80,23 @@ class Std: public IStatistics {
 			m_mean += (next - m_mean) / counter;
 			double delta2 = (next - m_mean);
 			m_m2 += delta * delta2;
-			m_std = std::sqrt(m_m2 / counter);
+			m_value = std::sqrt(m_m2 / counter);
 		}
 
 		double eval() const override {
-			return m_std;
-		}
-
-		const char * name() const override {
-			return "std";
+			return m_value;
 		}
 
 private:
     double m_mean;
-	double m_m2{0};
-	double m_std;
-	size_t counter{0};
+	double m_m2;
+	size_t counter;
 };
 
 class Percentile: public IStatistics {
 	public:
 	    Percentile(double percentile, const char* name):
-		    m_percentile{percentile}, m_name{name} {
+		    IStatistics{name}, m_percentile{percentile}, m_name{name} {
 		}
 
 		void update(double next) override {
@@ -130,10 +112,6 @@ class Percentile: public IStatistics {
 			const size_t index = static_cast<size_t>(
 				std::ceil(m_percentile * (sorted_values.size() - 1)));
 			return sorted_values[index];
-		}
-
-		const char * name() const override {
-			return m_name;
 		}
 
 private:
