@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
     seqcontainer.push_back(8);
     seqcontainer.push_back(9);
     std::cout << seqcontainer << std::endl;
+    std::cout << seqcontainer.size() << std::endl;
     seqcontainer.erase(2);
     seqcontainer.erase(3);
     seqcontainer.erase(4);
@@ -31,27 +32,28 @@ int main(int argc, char** argv) {
 
     //  === List Type Container ===
     std::cout << "List Type Container:" << std::endl;
-    ListTypeContainer<int> listtypecontaiener;
-    listtypecontaiener.push_back(0);
-    listtypecontaiener.push_back(1);
-    listtypecontaiener.push_back(2);
-    listtypecontaiener.push_back(3);
-    listtypecontaiener.push_back(4);
-    listtypecontaiener.push_back(5);
-    listtypecontaiener.push_back(6);
-    listtypecontaiener.push_back(7);
-    listtypecontaiener.push_back(8);
-    listtypecontaiener.push_back(9);
-    std::cout << listtypecontaiener << std::endl;
-    listtypecontaiener.erase(2);
-    listtypecontaiener.erase(3);
-    listtypecontaiener.erase(4);
-    std::cout << listtypecontaiener << std::endl;
-    listtypecontaiener.insert(0, 10);
-    std::cout << listtypecontaiener << std::endl;
-    listtypecontaiener.insert(listtypecontaiener.size() / 2, 20);
-    std::cout << listtypecontaiener << std::endl;
-    listtypecontaiener.insert(listtypecontaiener.size(), 30);
-    std::cout << listtypecontaiener << std::endl;
+    ListTypeContainer<int> listtypecontainer;
+    listtypecontainer.push_back(0);
+    listtypecontainer.push_back(1);
+    listtypecontainer.push_back(2);
+    listtypecontainer.push_back(3);
+    listtypecontainer.push_back(4);
+    listtypecontainer.push_back(5);
+    listtypecontainer.push_back(6);
+    listtypecontainer.push_back(7);
+    listtypecontainer.push_back(8);
+    listtypecontainer.push_back(9);
+    std::cout << listtypecontainer << std::endl;
+    std::cout << listtypecontainer.size() << std::endl;
+    listtypecontainer.erase(2);
+    listtypecontainer.erase(3);
+    listtypecontainer.erase(4);
+    std::cout << listtypecontainer << std::endl;
+    listtypecontainer.insert(0, 10);
+    std::cout << listtypecontainer << std::endl;
+    listtypecontainer.insert(listtypecontainer.size() / 2, 20);
+    std::cout << listtypecontainer << std::endl;
+    listtypecontainer.insert(listtypecontainer.size(), 30);
+    std::cout << listtypecontainer << std::endl;
     return 0;
 }

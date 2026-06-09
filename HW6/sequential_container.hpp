@@ -63,6 +63,7 @@ struct SequentialContainer {
         }
         if (m_size == 1) {
             delete [] m_region;
+            m_region = nullptr;
             m_size = 0;
             return;
         }
