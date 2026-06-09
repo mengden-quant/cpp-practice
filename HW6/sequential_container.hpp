@@ -17,7 +17,7 @@ struct SequentialContainer {
     }
 
     T& operator[](std::size_t index) {
-        if (index > m_size) {
+        if (index >= m_size) {
             throw std::out_of_range("Index is out of range!");
         }
         return m_region[index];
@@ -58,14 +58,19 @@ struct SequentialContainer {
     }
 
     void erase(std::size_t index) {
-        if (index > m_size) {
+        if (index >= m_size) {
             throw std::out_of_range("Index is out of range!");
+        }
+        if (m_size == 1) {
+            delete m_region;
+            m_size = 0;
+            return;
         }
         T* new_region = new T[m_size - 1];
         for (std::size_t i = 0; i < index; ++i) {
             new_region[i] = m_region[i];
         }
-        for (std::size_t i = index; i < m_size; ++i) {
+        for (std::size_t i = index+1; i < m_size; ++i) {
             new_region[i - 1] = m_region[i];
         }
         delete[] m_region;

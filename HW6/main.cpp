@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     listtypecontaiener.insert(0, 10);
     std::cout << listtypecontaiener << std::endl;
     listtypecontaiener.insert(static_cast<std::size_t>(listtypecontaiener.size() / 2), 20);
-    std::cout << seqcontainer << std::endl;
+    std::cout << listtypecontaiener << std::endl;
     listtypecontaiener.insert(listtypecontaiener.size(), 30);
     std::cout << listtypecontaiener << std::endl;
     return 0;
