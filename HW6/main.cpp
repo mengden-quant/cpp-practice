@@ -3,6 +3,7 @@
 #include "list_type_container.hpp"
 #include "sequential_container.hpp"
 #include "sequential_container_with_capacity.hpp"
+#include "singly_list_container.hpp"
 
 int main(int argc, char** argv) {
     //  === Sequential Container ===
@@ -56,6 +57,7 @@ int main(int argc, char** argv) {
     std::cout << listtypecontainer << std::endl;
     listtypecontainer.insert(listtypecontainer.size(), 30);
     std::cout << listtypecontainer << std::endl;
+    std::cout << std::endl;
 
     //  === Sequential Container with capacity ===
     std::cout << "Sequential Container with capacity:" << std::endl;
@@ -82,5 +84,32 @@ int main(int argc, char** argv) {
     std::cout << seqcontainercap << std::endl;
     seqcontainercap.insert(seqcontainercap.size(), 30);
     std::cout << seqcontainercap << std::endl;
+    std::cout << std::endl;
+
+    //  === Singly List Container ===
+    std::cout << "Singly List Container:" << std::endl;
+    SinglyListTypeContainer<int> singlylistcontainer;
+    singlylistcontainer.push_back(0);
+    singlylistcontainer.push_back(1);
+    singlylistcontainer.push_back(2);
+    singlylistcontainer.push_back(3);
+    singlylistcontainer.push_back(4);
+    singlylistcontainer.push_back(5);
+    singlylistcontainer.push_back(6);
+    singlylistcontainer.push_back(7);
+    singlylistcontainer.push_back(8);
+    singlylistcontainer.push_back(9);
+    std::cout << singlylistcontainer << std::endl;
+    std::cout << singlylistcontainer.size() << std::endl;
+    singlylistcontainer.erase(2);
+    singlylistcontainer.erase(3);
+    singlylistcontainer.erase(4);
+    std::cout << singlylistcontainer << std::endl;
+    singlylistcontainer.insert(0, 10);
+    std::cout << singlylistcontainer << std::endl;
+    singlylistcontainer.insert(singlylistcontainer.size() / 2, 20);
+    std::cout << singlylistcontainer << std::endl;
+    singlylistcontainer.insert(singlylistcontainer.size(), 30);
+    std::cout << singlylistcontainer << std::endl;
     return 0;
 }
