@@ -4,112 +4,19 @@
 #include "sequential_container.hpp"
 #include "sequential_container_with_capacity.hpp"
 #include "singly_list_container.hpp"
+#include "demo.hpp"
 
 int main(int argc, char** argv) {
     //  === Sequential Container ===
-    std::cout << "Sequential Container:" << std::endl;
-    SequentialContainer<int> seqcontainer;
-    seqcontainer.push_back(0);
-    seqcontainer.push_back(1);
-    seqcontainer.push_back(2);
-    seqcontainer.push_back(3);
-    seqcontainer.push_back(4);
-    seqcontainer.push_back(5);
-    seqcontainer.push_back(6);
-    seqcontainer.push_back(7);
-    seqcontainer.push_back(8);
-    seqcontainer.push_back(9);
-    std::cout << seqcontainer << std::endl;
-    std::cout << seqcontainer.size() << std::endl;
-    seqcontainer.erase(2);
-    seqcontainer.erase(3);
-    seqcontainer.erase(4);
-    std::cout << seqcontainer << std::endl;
-    seqcontainer.insert(0, 10);
-    std::cout << seqcontainer << std::endl;
-    seqcontainer.insert(seqcontainer.size() / 2, 20);
-    std::cout << seqcontainer << std::endl;
-    seqcontainer.insert(seqcontainer.size(), 30);
-    std::cout << seqcontainer << std::endl;
+    run_demo<SequentialContainer<int>>("Sequential Container");
 
     //  === List Type Container ===
-    std::cout << "List Type Container:" << std::endl;
-    ListTypeContainer<int> listtypecontainer;
-    listtypecontainer.push_back(0);
-    listtypecontainer.push_back(1);
-    listtypecontainer.push_back(2);
-    listtypecontainer.push_back(3);
-    listtypecontainer.push_back(4);
-    listtypecontainer.push_back(5);
-    listtypecontainer.push_back(6);
-    listtypecontainer.push_back(7);
-    listtypecontainer.push_back(8);
-    listtypecontainer.push_back(9);
-    std::cout << listtypecontainer << std::endl;
-    std::cout << listtypecontainer.size() << std::endl;
-    listtypecontainer.erase(2);
-    listtypecontainer.erase(3);
-    listtypecontainer.erase(4);
-    std::cout << listtypecontainer << std::endl;
-    listtypecontainer.insert(0, 10);
-    std::cout << listtypecontainer << std::endl;
-    listtypecontainer.insert(listtypecontainer.size() / 2, 20);
-    std::cout << listtypecontainer << std::endl;
-    listtypecontainer.insert(listtypecontainer.size(), 30);
-    std::cout << listtypecontainer << std::endl;
-    std::cout << std::endl;
+    run_demo<ListTypeContainer<int>>("List Type Container");
 
     //  === Sequential Container with capacity ===
-    std::cout << "Sequential Container with capacity:" << std::endl;
-    SequentialContainerCap<int> seqcontainercap;
-    seqcontainercap.push_back(0);
-    seqcontainercap.push_back(1);
-    seqcontainercap.push_back(2);
-    seqcontainercap.push_back(3);
-    seqcontainercap.push_back(4);
-    seqcontainercap.push_back(5);
-    seqcontainercap.push_back(6);
-    seqcontainercap.push_back(7);
-    seqcontainercap.push_back(8);
-    seqcontainercap.push_back(9);
-    std::cout << seqcontainercap << std::endl;
-    std::cout << seqcontainercap.size() << std::endl;
-    seqcontainercap.erase(2);
-    seqcontainercap.erase(3);
-    seqcontainercap.erase(4);
-    std::cout << seqcontainercap << std::endl;
-    seqcontainercap.insert(0, 10);
-    std::cout << seqcontainercap << std::endl;
-    seqcontainercap.insert(seqcontainercap.size() / 2, 20);
-    std::cout << seqcontainercap << std::endl;
-    seqcontainercap.insert(seqcontainercap.size(), 30);
-    std::cout << seqcontainercap << std::endl;
-    std::cout << std::endl;
+    run_demo<SequentialContainerCap<int>>("Sequential Container with capacity");
 
     //  === Singly List Container ===
-    std::cout << "Singly List Container:" << std::endl;
-    SinglyListTypeContainer<int> singlylistcontainer;
-    singlylistcontainer.push_back(0);
-    singlylistcontainer.push_back(1);
-    singlylistcontainer.push_back(2);
-    singlylistcontainer.push_back(3);
-    singlylistcontainer.push_back(4);
-    singlylistcontainer.push_back(5);
-    singlylistcontainer.push_back(6);
-    singlylistcontainer.push_back(7);
-    singlylistcontainer.push_back(8);
-    singlylistcontainer.push_back(9);
-    std::cout << singlylistcontainer << std::endl;
-    std::cout << singlylistcontainer.size() << std::endl;
-    singlylistcontainer.erase(2);
-    singlylistcontainer.erase(3);
-    singlylistcontainer.erase(4);
-    std::cout << singlylistcontainer << std::endl;
-    singlylistcontainer.insert(0, 10);
-    std::cout << singlylistcontainer << std::endl;
-    singlylistcontainer.insert(singlylistcontainer.size() / 2, 20);
-    std::cout << singlylistcontainer << std::endl;
-    singlylistcontainer.insert(singlylistcontainer.size(), 30);
-    std::cout << singlylistcontainer << std::endl;
+    run_demo<SinglyListTypeContainer<int>>("Singly List Container");
     return 0;
 }
