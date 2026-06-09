@@ -62,7 +62,7 @@ struct SequentialContainer {
             throw std::out_of_range("Index is out of range!");
         }
         if (m_size == 1) {
-            delete m_region;
+            delete [] m_region;
             m_size = 0;
             return;
         }
