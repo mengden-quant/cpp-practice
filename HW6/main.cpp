@@ -2,6 +2,7 @@
 
 #include "list_type_container.hpp"
 #include "sequential_container.hpp"
+#include "sequential_container_with_capacity.hpp"
 
 int main(int argc, char** argv) {
     //  === Sequential Container ===
@@ -55,5 +56,31 @@ int main(int argc, char** argv) {
     std::cout << listtypecontainer << std::endl;
     listtypecontainer.insert(listtypecontainer.size(), 30);
     std::cout << listtypecontainer << std::endl;
+
+    //  === Sequential Container with capacity ===
+    std::cout << "Sequential Container with capacity:" << std::endl;
+    SequentialContainerCap<int> seqcontainercap;
+    seqcontainercap.push_back(0);
+    seqcontainercap.push_back(1);
+    seqcontainercap.push_back(2);
+    seqcontainercap.push_back(3);
+    seqcontainercap.push_back(4);
+    seqcontainercap.push_back(5);
+    seqcontainercap.push_back(6);
+    seqcontainercap.push_back(7);
+    seqcontainercap.push_back(8);
+    seqcontainercap.push_back(9);
+    std::cout << seqcontainercap << std::endl;
+    std::cout << seqcontainercap.size() << std::endl;
+    seqcontainercap.erase(2);
+    seqcontainercap.erase(3);
+    seqcontainercap.erase(4);
+    std::cout << seqcontainercap << std::endl;
+    seqcontainercap.insert(0, 10);
+    std::cout << seqcontainercap << std::endl;
+    seqcontainercap.insert(seqcontainercap.size() / 2, 20);
+    std::cout << seqcontainercap << std::endl;
+    seqcontainercap.insert(seqcontainercap.size(), 30);
+    std::cout << seqcontainercap << std::endl;
     return 0;
 }
