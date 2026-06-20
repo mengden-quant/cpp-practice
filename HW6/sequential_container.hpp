@@ -7,10 +7,27 @@ template <typename T>
 struct SequentialContainer {
     SequentialContainer() : m_size{0}, m_region{nullptr} {};
     ~SequentialContainer() {
-        delete[] m_region;
+        clear();
     };
     SequentialContainer(const SequentialContainer& container) = delete;
     SequentialContainer& operator=(const SequentialContainer& other) = delete;
+
+    SequentialContainer(SequentialContainer&& container) noexcept
+        : m_size{container.m_size}, m_region{container.m_region} {
+        container.m_size = 0;
+        container.m_region = nullptr;
+    }
+
+    SequentialContainer& operator=(SequentialContainer&& container) noexcept {
+        if (this != &container) {
+            clear();
+            m_size = container.m_size;
+            m_region = container.m_region;
+            container.m_size = 0;
+            container.m_region = nullptr;
+        }
+        return *this;
+    }
 
     std::size_t size() const {
         return m_size;
@@ -83,6 +100,9 @@ struct SequentialContainer {
    private:
     std::size_t m_size;
     T* m_region;
+    void clear() {
+        delete[] m_region;
+    }
 };
 
 template <typename T>

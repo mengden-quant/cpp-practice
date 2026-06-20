@@ -8,15 +8,30 @@ struct SinglyListTypeContainer {
     SinglyListTypeContainer() : m_size{0}, m_first{nullptr}, m_last{nullptr} {};
 
     ~SinglyListTypeContainer() {
-        Node* current = m_first;
-        while (current != nullptr) {
-            Node* next = current->next;
-            delete current;
-            current = next;
-        }
+        clear();
     }
     SinglyListTypeContainer(const SinglyListTypeContainer& container) = delete;
     SinglyListTypeContainer& operator=(const SinglyListTypeContainer& other) = delete;
+
+    SinglyListTypeContainer(SinglyListTypeContainer&& container) noexcept
+        : m_size{container.m_size}, m_first{container.m_first}, m_last{container.m_last} {
+        container.m_first = nullptr;
+        container.m_last = nullptr;
+        container.m_size = 0;
+    }
+
+    SinglyListTypeContainer& operator=(SinglyListTypeContainer&& container) noexcept {
+        if (this != &container) {
+            clear();
+            m_size = container.m_size;
+            m_first = container.m_first;
+            m_last = container.m_last;
+            container.m_size = 0;
+            container.m_first = nullptr;
+            container.m_last = nullptr;
+        }
+        return *this;
+    }
 
     std::size_t size() const {
         return m_size;
@@ -137,6 +152,14 @@ struct SinglyListTypeContainer {
     Node* m_first;
     Node* m_last;
     std::size_t m_size;
+    void clear() {
+        Node* current = m_first;
+        while (current != nullptr) {
+            Node* next = current->next;
+            delete current;
+            current = next;
+        }
+    }
 };
 
 template <typename T>

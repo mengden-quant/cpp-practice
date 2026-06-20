@@ -7,10 +7,33 @@ template <typename T>
 struct SequentialContainerCap {
     SequentialContainerCap() : m_size{0}, m_region{nullptr}, m_capacity{0}, m_alpha{2.0} {};
     ~SequentialContainerCap() {
-        delete[] m_region;
+        clear();
     };
     SequentialContainerCap(const SequentialContainerCap& container) = delete;
     SequentialContainerCap& operator=(const SequentialContainerCap& other) = delete;
+
+    SequentialContainerCap(SequentialContainerCap&& container) noexcept
+        : m_size{container.m_size},
+          m_region{container.m_region},
+          m_capacity{container.m_capacity},
+          m_alpha{container.m_alpha} {
+        container.m_size = 0;
+        container.m_region = nullptr;
+        container.m_capacity = 0;
+    }
+
+    SequentialContainerCap& operator=(SequentialContainerCap&& container) noexcept {
+        if (this != &container) {
+            clear();
+            m_size = container.m_size;
+            m_region = container.m_region;
+            m_capacity = container.m_capacity;
+            container.m_size = 0;
+            container.m_region = nullptr;
+            container.m_capacity = 0;
+        }
+        return *this;
+    }
 
     std::size_t size() const {
         return m_size;
@@ -91,6 +114,9 @@ struct SequentialContainerCap {
     T* m_region;
     std::size_t m_capacity;
     const double m_alpha;
+    void clear() {
+        delete[] m_region;
+    }
 };
 
 template <typename T>
