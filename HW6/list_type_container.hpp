@@ -82,6 +82,27 @@ struct ListTypeContainer {
         }
     }
 
+    void push_back(T&& value) {
+        if (m_size == 0) {
+            Node* node = new Node;
+            m_first = node;
+            m_last = node;
+            node->prev = nullptr;
+            node->next = nullptr;
+            node->data = std::move(value);
+            m_size = 1;
+        } else {
+            Node* node_prev = m_last;
+            Node* node_next = new Node;
+            node_prev->next = node_next;
+            m_last = node_next;
+            node_next->next = nullptr;
+            node_next->prev = node_prev;
+            node_next->data = std::move(value);
+            ++m_size;
+        }
+    }
+
     void insert(std::size_t index, const T& value) {
         if (index > m_size) {
             throw std::out_of_range("Index is out of range!");
@@ -109,6 +130,37 @@ struct ListTypeContainer {
             node->prev = new_node;
             node_prev->next = new_node;
             new_node->data = value;
+        }
+        ++m_size;
+    }
+
+    void insert(std::size_t index, T&& value) {
+        if (index > m_size) {
+            throw std::out_of_range("Index is out of range!");
+        }
+        if (index == m_size) {
+            push_back(std::move(value));
+            return;
+        }
+        if (index == 0) {
+            Node* new_node = new Node;
+            new_node->prev = nullptr;
+            new_node->next = m_first;
+            m_first->prev = new_node;
+            new_node->data = std::move(value);
+            m_first = new_node;
+        } else {
+            Node* node = m_first;
+            for (std::size_t i = 0; i < index; ++i) {
+                node = node->next;
+            }
+            Node* new_node = new Node;
+            new_node->next = node;
+            Node* node_prev = node->prev;
+            new_node->prev = node_prev;
+            node->prev = new_node;
+            node_prev->next = new_node;
+            new_node->data = std::move(value);
         }
         ++m_size;
     }

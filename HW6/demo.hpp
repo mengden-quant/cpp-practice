@@ -1,4 +1,5 @@
 
+#include <string>
 #include <utility>
 
 template <typename Container>
@@ -44,4 +45,15 @@ void run_move_demo(const char* title) {
     std::cout << first.size() << std::endl;
     second = std::move(second);
     std::cout << second.size() << std::endl;
+}
+
+template <typename Container>
+void run_r_value_demo(const char* title) {
+    std::cout << title << " r-value demo:" << std::endl;
+    Container c;
+    std::string s = "hello";
+    c.push_back(s);
+    c.insert(1, std::string{"world"});
+    c.push_back(std::move(s));
+    std::cout << c << std::endl;
 }

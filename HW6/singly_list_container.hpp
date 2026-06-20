@@ -76,6 +76,21 @@ struct SinglyListTypeContainer {
         }
     }
 
+    void push_back(T&& value) {
+        Node* new_node = new Node;
+        new_node->next = nullptr;
+        new_node->data = std::move(value);
+        if (m_size == 0) {
+            m_first = new_node;
+            m_last = new_node;
+            m_size = 1;
+        } else {
+            m_last->next = new_node;
+            m_last = new_node;
+            ++m_size;
+        }
+    }
+
     void insert(std::size_t index, const T& value) {
         if (index > m_size) {
             throw std::out_of_range("Index is out of range!");
@@ -98,6 +113,32 @@ struct SinglyListTypeContainer {
             new_node->next = node_prev->next;
             node_prev->next = new_node;
             new_node->data = value;
+        }
+        ++m_size;
+    }
+
+    void insert(std::size_t index, T&& value) {
+        if (index > m_size) {
+            throw std::out_of_range("Index is out of range!");
+        }
+        if (index == m_size) {
+            push_back(std::move(value));
+            return;
+        }
+        if (index == 0) {
+            Node* new_node = new Node;
+            new_node->next = m_first;
+            new_node->data = std::move(value);
+            m_first = new_node;
+        } else {
+            Node* node_prev = m_first;
+            for (std::size_t i = 0; i < index - 1; ++i) {
+                node_prev = node_prev->next;
+            }
+            Node* new_node = new Node;
+            new_node->next = node_prev->next;
+            node_prev->next = new_node;
+            new_node->data = std::move(value);
         }
         ++m_size;
     }

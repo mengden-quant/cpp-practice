@@ -71,6 +71,17 @@ struct SequentialContainerCap {
         ++m_size;
     };
 
+    void push_back(T&& value) {
+        T* new_region = new T[m_size + 1];
+        for (std::size_t i = 0; i < m_size; ++i) {
+            new_region[i] = m_region[i];
+        }
+        new_region[m_size] = std::move(value);
+        delete[] m_region;
+        m_region = new_region;
+        ++m_size;
+    };
+
     void insert(std::size_t index, const T& value) {
         if (index > m_size) {
             throw std::out_of_range("Index is out of range!");
@@ -96,6 +107,23 @@ struct SequentialContainerCap {
             }
         }
         m_region[index] = value;
+        ++m_size;
+    }
+
+    void insert(std::size_t index, T&& value) {
+        if (index > m_size) {
+            throw std::out_of_range("Index is out of range!");
+        }
+        T* new_region = new T[m_size + 1];
+        for (std::size_t i = 0; i < index; ++i) {
+            new_region[i] = m_region[i];
+        }
+        new_region[index] = std::move(value);
+        for (std::size_t i = index; i < m_size; ++i) {
+            new_region[i + 1] = m_region[i];
+        }
+        delete[] m_region;
+        m_region = new_region;
         ++m_size;
     }
 
