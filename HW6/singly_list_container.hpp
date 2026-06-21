@@ -190,6 +190,35 @@ struct SinglyListTypeContainer {
         Node* next;
         T data;
     };
+
+   public:
+    struct Iterator {
+       public:
+        explicit Iterator(Node* current) : m_current{current} {};
+        T& operator*() {
+            return m_current->data;
+        };
+        Iterator& operator++() {
+            m_current = m_current->next;
+
+            return *this;
+        };
+        bool operator!=(const Iterator& other) const {
+            return m_current != other.m_current;
+        };
+
+       private:
+        Node* m_current;
+    };
+    Iterator begin() {
+        return Iterator{m_first};
+    }
+
+    Iterator end() {
+        return Iterator{nullptr};
+    }
+
+   private:
     Node* m_first;
     Node* m_last;
     std::size_t m_size;

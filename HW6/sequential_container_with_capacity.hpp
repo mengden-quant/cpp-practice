@@ -137,6 +137,32 @@ struct SequentialContainerCap {
         --m_size;
     }
 
+    struct Iterator {
+       public:
+        explicit Iterator(T* current) : m_current{current} {};
+        T& operator*() {
+            return *m_current;
+        };
+        Iterator& operator++() {
+            ++m_current;
+
+            return *this;
+        };
+        bool operator!=(const Iterator& other) const {
+            return m_current != other.m_current;
+        };
+
+       private:
+        T* m_current;
+    };
+    Iterator begin() {
+        return Iterator{m_region};
+    }
+
+    Iterator end() {
+        return Iterator{m_region + m_size};
+    }
+
    private:
     std::size_t m_size;
     T* m_region;

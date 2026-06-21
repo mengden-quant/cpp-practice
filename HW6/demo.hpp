@@ -57,3 +57,16 @@ void run_r_value_demo(const char* title) {
     c.push_back(std::move(s));
     std::cout << c << std::endl;
 }
+
+template <typename Container>
+void run_iterator_demo(const char* title) {
+    std::cout << title << " iterator demo:" << std::endl;
+    Container c;
+    for (int i = 0; i < 10; ++i) {
+        c.push_back(i);
+    }
+    for (auto it = c.begin(); it != c.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+}
