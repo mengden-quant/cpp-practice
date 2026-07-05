@@ -12,9 +12,7 @@ struct SequentialContainer {
     };
 
     SequentialContainer(const SequentialContainer& container)
-        : m_size{container.m_size},
-          m_capacity{container.m_capacity},
-          m_alpha{container.m_alpha} {
+        : m_size{container.m_size}, m_capacity{container.m_capacity}, m_alpha{container.m_alpha} {
         if (m_capacity == 0) {
             m_region = nullptr;
             return;
@@ -41,8 +39,7 @@ struct SequentialContainer {
             }
             m_region = new_region;
             return *this;
-        }
-        else {
+        } else {
             return *this;
         }
     }
