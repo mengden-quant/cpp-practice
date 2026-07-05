@@ -21,8 +21,8 @@ enable_testing()
 
 add_executable(
     containers_tests
-    test/sequential_container_tests.cpp
-    test/list_type_container_tests.cpp
+    tests/sequential_container_tests.cpp
+    tests/list_type_container_tests.cpp
 )
 
 target_include_directories(

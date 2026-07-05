@@ -2,17 +2,52 @@
 #include <cstddef>
 #include <iostream>
 #include <stdexcept>
+#include <utility>
 
 template <typename T>
-struct SequentialContainerCap {
-    SequentialContainerCap() : m_size{0}, m_region{nullptr}, m_capacity{0}, m_alpha{2.0} {};
-    ~SequentialContainerCap() {
+struct SequentialContainer {
+    SequentialContainer() : m_size{0}, m_region{nullptr}, m_capacity{0}, m_alpha{2.0} {};
+    ~SequentialContainer() {
         clear();
     };
-    SequentialContainerCap(const SequentialContainerCap& container) = delete;
-    SequentialContainerCap& operator=(const SequentialContainerCap& other) = delete;
 
-    SequentialContainerCap(SequentialContainerCap&& container) noexcept
+    SequentialContainer(const SequentialContainer& container)
+        : m_size{container.m_size},
+          m_capacity{container.m_capacity},
+          m_alpha{container.m_alpha} {
+        if (m_capacity == 0) {
+            m_region = nullptr;
+            return;
+        }
+        T* new_region = new T[m_capacity];
+        for (std::size_t i = 0; i < m_size; ++i) {
+            new_region[i] = container.m_region[i];
+        }
+        m_region = new_region;
+    }
+
+    SequentialContainer& operator=(const SequentialContainer& other) {
+        if (this != &other) {
+            clear();
+            if (other.m_capacity == 0) {
+                return *this;
+            }
+            m_size = other.m_size;
+            m_capacity = other.m_capacity;
+            m_alpha = other.m_alpha;
+            T* new_region = new T[m_capacity];
+            for (std::size_t i = 0; i < m_size; ++i) {
+                new_region[i] = other.m_region[i];
+            }
+            m_region = new_region;
+            return *this;
+        }
+        else {
+            return *this;
+        }
+    }
+
+    SequentialContainer(SequentialContainer&& container) noexcept
         : m_size{container.m_size},
           m_region{container.m_region},
           m_capacity{container.m_capacity},
@@ -22,7 +57,7 @@ struct SequentialContainerCap {
         container.m_capacity = 0;
     }
 
-    SequentialContainerCap& operator=(SequentialContainerCap&& container) noexcept {
+    SequentialContainer& operator=(SequentialContainer&& container) noexcept {
         if (this != &container) {
             clear();
             m_size = container.m_size;
@@ -169,14 +204,85 @@ struct SequentialContainerCap {
     std::size_t m_capacity;
     const double m_alpha;
     void clear() {
+        m_size = 0;
+        m_capacity = 0;
         delete[] m_region;
     }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& stream, const SequentialContainerCap<T>& container) {
+std::ostream& operator<<(std::ostream& stream, const SequentialContainer<T>& container) {
     for (std::size_t i = 0; i < container.size(); ++i) {
         stream << container[i] << " ";
     }
     return stream;
+}
+
+template <typename Container>
+void run_demo(const char* title) {
+    std::cout << title << ":\n";
+    Container container;
+    for (int i = 0; i < 10; ++i) {
+        container.push_back(i);
+    }
+    std::cout << container << std::endl;
+    std::cout << container.size() << std::endl;
+    container.erase(2);
+    container.erase(3);
+    container.erase(4);
+    std::cout << container << std::endl;
+    container.insert(0, 10);
+    std::cout << container << std::endl;
+    container.insert(container.size() / 2, 20);
+    std::cout << container << std::endl;
+    container.insert(container.size(), 30);
+    std::cout << container << std::endl;
+}
+
+template <typename Container>
+void run_move_demo(const char* title) {
+    std::cout << title << " move constructor:" << std::endl;
+    Container source;
+    source.push_back(1);
+    source.push_back(2);
+    Container destination = std::move(source);
+    std::cout << destination << std::endl;
+    std::cout << destination.size() << std::endl;
+    std::cout << source.size() << std::endl;
+    std::cout << title << " move assignment:" << std::endl;
+    Container first;
+    first.push_back(1);
+    first.push_back(2);
+    Container second;
+    second.push_back(99);
+    second = std::move(first);
+    std::cout << second << std::endl;
+    std::cout << second.size() << std::endl;
+    std::cout << first.size() << std::endl;
+    second = std::move(second);
+    std::cout << second.size() << std::endl;
+}
+
+template <typename Container>
+void run_r_value_demo(const char* title) {
+    std::cout << title << " r-value demo:" << std::endl;
+    Container c;
+    std::string s = "hello";
+    c.push_back(s);
+    c.insert(1, std::string{"world"});
+    c.push_back(std::move(s));
+    std::cout << c << std::endl;
+}
+
+template <typename Container>
+void run_iterator_demo(const char* title) {
+    std::cout << title << " iterator demo:" << std::endl;
+    Container c;
+    for (int i = 0; i < 10; ++i) {
+        c.push_back(i);
+    }
+    for (auto it = c.begin(); it != c.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
 }
