@@ -10,8 +10,27 @@ struct ListTypeContainer {
     ~ListTypeContainer() {
         clear();
     }
-    ListTypeContainer(const ListTypeContainer& container) = delete;
-    ListTypeContainer& operator=(const ListTypeContainer& other) = delete;
+
+    ListTypeContainer(const ListTypeContainer& container)
+        : m_size{0}, m_first{nullptr}, m_last{nullptr} {
+        Node* current = container.m_first;
+        while (current != nullptr) {
+            this->push_back(current->data);
+            current = current->next;
+        }
+    }
+
+    ListTypeContainer& operator=(const ListTypeContainer& other) {
+        if (this != &other) {
+            clear();
+            Node* current = other.m_first;
+            while (current != nullptr) {
+                this->push_back(current->data);
+                current = current->next;
+            }
+        }
+        return *this;
+    }
 
     ListTypeContainer(ListTypeContainer&& container) noexcept
         : m_size{container.m_size}, m_first{container.m_first}, m_last{container.m_last} {
@@ -253,6 +272,9 @@ struct ListTypeContainer {
             delete current;
             current = next;
         }
+        m_first = nullptr;
+        m_last = nullptr;
+        m_size = 0;
     }
 };
 
