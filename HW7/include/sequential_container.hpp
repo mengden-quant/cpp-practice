@@ -6,13 +6,13 @@
 
 template <typename T>
 struct SequentialContainer {
-    SequentialContainer() : m_size{0}, m_region{nullptr}, m_capacity{0}, m_alpha{2.0} {};
+    SequentialContainer() : m_size{0}, m_region{nullptr}, m_capacity{0} {};
     ~SequentialContainer() {
         clear();
     };
 
     SequentialContainer(const SequentialContainer& container)
-        : m_size{container.m_size}, m_capacity{container.m_capacity}, m_alpha{container.m_alpha} {
+        : m_size{container.m_size}, m_capacity{container.m_capacity} {
         if (m_capacity == 0) {
             m_region = nullptr;
             return;
@@ -32,7 +32,6 @@ struct SequentialContainer {
             }
             m_size = other.m_size;
             m_capacity = other.m_capacity;
-            m_alpha = other.m_alpha;
             T* new_region = new T[m_capacity];
             for (std::size_t i = 0; i < m_size; ++i) {
                 new_region[i] = other.m_region[i];
@@ -45,10 +44,7 @@ struct SequentialContainer {
     }
 
     SequentialContainer(SequentialContainer&& container) noexcept
-        : m_size{container.m_size},
-          m_region{container.m_region},
-          m_capacity{container.m_capacity},
-          m_alpha{container.m_alpha} {
+        : m_size{container.m_size}, m_region{container.m_region}, m_capacity{container.m_capacity} {
         container.m_size = 0;
         container.m_region = nullptr;
         container.m_capacity = 0;
@@ -199,7 +195,7 @@ struct SequentialContainer {
     std::size_t m_size;
     T* m_region;
     std::size_t m_capacity;
-    const double m_alpha;
+    static constexpr double m_alpha = 2.0;
     void clear() {
         m_size = 0;
         m_capacity = 0;
