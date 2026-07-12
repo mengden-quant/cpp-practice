@@ -100,13 +100,20 @@ struct SequentialContainer {
     };
 
     void push_back(T&& value) {
-        T* new_region = new T[m_size + 1];
-        for (std::size_t i = 0; i < m_size; ++i) {
-            new_region[i] = m_region[i];
+        if (m_size == m_capacity) {
+            std::size_t new_capacity = (m_capacity == 0 ? 1 : m_capacity * m_alpha);
+            T* new_region = new T[new_capacity];
+            for (std::size_t i = 0; i < m_size; ++i) {
+                new_region[i] = m_region[i];
+            }
+            delete[] m_region;
+            m_region = new_region;
+            m_capacity = new_capacity;
+            m_region[m_size] = std::move(value);
+            ++m_size;
+            return;
         }
-        new_region[m_size] = std::move(value);
-        delete[] m_region;
-        m_region = new_region;
+        m_region[m_size] = std::move(value);
         ++m_size;
     };
 
