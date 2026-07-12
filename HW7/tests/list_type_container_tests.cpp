@@ -184,9 +184,6 @@ TEST(list_type_container, destructor_destroys_all_elements) {
         list.push_back(TrackerDeletion{});
         EXPECT_GT(TrackerDeletion::live_count, 0);
         std::cout << TrackerDeletion::live_count << std::endl;
-        std::cout << "AAAAA" << std::endl;
     }
-    std::cout << "AAAAA" << std::endl;
-
     EXPECT_EQ(TrackerDeletion::live_count, 0);
 }
