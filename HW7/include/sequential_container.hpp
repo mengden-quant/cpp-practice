@@ -200,5 +200,6 @@ struct SequentialContainer {
         m_size = 0;
         m_capacity = 0;
         delete[] m_region;
+        m_region = nullptr;
     }
 };
