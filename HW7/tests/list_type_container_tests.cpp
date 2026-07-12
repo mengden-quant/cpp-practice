@@ -16,6 +16,24 @@ struct ListTypeContainerTest : public testing::Test {
     }
 };
 
+struct TrackerDeletion {
+    static inline int live_count = 0;
+    TrackerDeletion() {
+        ++live_count;
+    }
+    TrackerDeletion(const TrackerDeletion&) {
+        ++live_count;
+    }
+    TrackerDeletion& operator=(const TrackerDeletion& other) = default;
+    TrackerDeletion(TrackerDeletion&&) noexcept {
+        ++live_count;
+    }
+    TrackerDeletion& operator=(TrackerDeletion&& other) noexcept = default;
+    ~TrackerDeletion() {
+        --live_count;
+    }
+};
+
 TEST(list_type_container, default_constructor) {
     ListTypeContainer<double> list;
     const std::size_t expected = 0;
@@ -155,4 +173,20 @@ TEST(list_type_container, move_assignment_transfers_elements) {
     source.push_back(3.0);
     EXPECT_EQ(source.size(), 1);
     EXPECT_EQ(source[0], 3.0);
+}
+
+TEST(list_type_container, destructor_destroys_all_elements) {
+    TrackerDeletion::live_count = 0;
+    {
+        ListTypeContainer<TrackerDeletion> list;
+        list.push_back(TrackerDeletion{});
+        list.push_back(TrackerDeletion{});
+        list.push_back(TrackerDeletion{});
+        EXPECT_GT(TrackerDeletion::live_count, 0);
+        std::cout << TrackerDeletion::live_count << std::endl;
+        std::cout << "AAAAA" << std::endl;
+    }
+    std::cout << "AAAAA" << std::endl;
+
+    EXPECT_EQ(TrackerDeletion::live_count, 0);
 }
