@@ -1,74 +1,102 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <optional>
+#include <thread>
 #include <vector>
 
 #include "CRC32.hpp"
 #include "IO.hpp"
 
 /// @brief Переписывает последние 4 байта значением value
-void replaceLastFourBytes(std::vector<char> &data, uint32_t value) {
-  std::copy_n(reinterpret_cast<const char *>(&value), 4, data.end() - 4);
+void replaceLastFourBytes(std::vector<char>& data, uint32_t value) {
+    std::copy_n(reinterpret_cast<const char*>(&value), 4, data.end() - 4);
 }
 
 /**
- * @brief Формирует новый вектор с тем же CRC32, добавляя в конец оригинального
- * строку injection и дополнительные 4 байта
- * @details При формировании нового вектора последние 4 байта не несут полезной
- * нагрузки и подбираются таким образом, чтобы CRC32 нового и оригинального
- * вектора совпадали
- * @param original оригинальный вектор
- * @param injection произвольная строка, которая будет добавлена после данных
- * оригинального вектора
- * @return новый вектор
- */
-std::vector<char> hack(const std::vector<char> &original,
-                       const std::string &injection) {
-  const uint32_t originalCrc32 = crc32(original.data(), original.size());
+ * @brief Ищет комбинацию последних 4 байт, при которой CRC32 изменённого
+ * вектора совпадает с CRC32 оригинального вектора
+ * @details Перебирает значения в диапазоне [begin, end). Для каждого значения
+ * формирует данные original + injection + 4 байта и сравнивает их CRC32
+ * с CRC32 оригинального вектора
+ * @param original оригинальный вектор
+ * @param injection строка, добавляемая после данных оригинального вектора
+ * @param begin начало диапазона поиска, включительно
+ * @param end конец диапазона поиска, не включительно
+ * @return готовый изменённый вектор с совпадающим CRC32 или std::nullopt,
+ * если в заданном диапазоне подходящее значение не найдено
+ */
+std::optional<std::vector<char>> hack(const std::vector<char>& original,
+                                      const std::string& injection, std::uint64_t begin,
+                                      std::uint64_t end) {
+    const uint32_t originalCrc32 = crc32(original.data(), original.size());
 
-  std::vector<char> result(original.size() + injection.size() + 4);
-  auto it = std::copy(original.begin(), original.end(), result.begin());
-  std::copy(injection.begin(), injection.end(), it);
+    std::vector<char> result(original.size() + injection.size() + 4);
+    auto it = std::copy(original.begin(), original.end(), result.begin());
+    std::copy(injection.begin(), injection.end(), it);
 
-  /*
-   * Внимание: код ниже крайне не оптимален.
-   * В качестве доп. задания устраните избыточные вычисления
-   */
-  const size_t maxVal = std::numeric_limits<uint32_t>::max();
-  for (size_t i = 0; i < maxVal; ++i) {
-    // Заменяем последние четыре байта на значение i
-    replaceLastFourBytes(result, uint32_t(i));
-    // Вычисляем CRC32 текущего вектора result
-    auto currentCrc32 = crc32(result.data(), result.size());
-
-    if (currentCrc32 == originalCrc32) {
-      std::cout << "Success\n";
-      return result;
+    constexpr std::uint64_t rangeEnd = std::uint64_t{std::numeric_limits<std::uint32_t>::max()} + 1;
+    if (end > rangeEnd) {
+        end = rangeEnd;
     }
-    // Отображаем прогресс
-    if (i % 1000 == 0) {
-      std::cout << "progress: "
-                << static_cast<double>(i) / static_cast<double>(maxVal)
-                << std::endl;
+    for (std::uint64_t i = begin; i < end; ++i) {
+        replaceLastFourBytes(result, static_cast<std::uint32_t>(i));
+        auto currentCrc32 = crc32(result.data(), result.size());
+
+        if (currentCrc32 == originalCrc32) {
+            return result;
+        }
     }
-  }
-  throw std::logic_error("Can't hack");
+    return std::nullopt;
 }
 
-int main(int argc, char **argv) {
-  if (argc != 3) {
-    std::cerr << "Call with two args: " << argv[0]
-              << " <input file> <output file>\n";
-    return 1;
-  }
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "Call with two args: " << argv[0] << " <input file> <output file>\n";
+        return 1;
+    }
 
-  try {
-    const std::vector<char> data = readFromFile(argv[1]);
-    const std::vector<char> badData = hack(data, "He-he-he");
-    writeToFile(argv[2], badData);
-  } catch (std::exception &ex) {
-    std::cerr << ex.what() << '\n';
-    return 2;
-  }
-  return 0;
+    unsigned int threadCount = std::thread::hardware_concurrency();
+
+    if (threadCount == 0) {
+        threadCount = 2;
+    }
+    std::vector<std::optional<std::vector<char>>> results(threadCount);
+    std::vector<std::thread> threads;
+
+    constexpr std::uint64_t totalValues =
+        std::uint64_t{std::numeric_limits<std::uint32_t>::max()} + 1;
+    try {
+        const std::vector<char> data = readFromFile(argv[1]);
+        const std::string injection = "He-he-he";
+        for (std::uint64_t i = 0; i < threadCount; ++i) {
+            std::uint64_t begin = i * totalValues / threadCount;
+            std::uint64_t end = (i + 1) * totalValues / threadCount;
+            std::thread thread(
+                [&, i, begin, end]() { results[i] = hack(data, injection, begin, end); });
+
+            threads.push_back(std::move(thread));
+        }
+        for (auto& thread : threads) {
+            thread.join();
+        }
+        bool found = false;
+        for (const auto& result : results) {
+            if (result.has_value()) {
+                writeToFile(argv[2], result.value());
+                std::cout << "Success\n";
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw std::logic_error("Can't hack");
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        return 2;
+    }
+    return 0;
 }
