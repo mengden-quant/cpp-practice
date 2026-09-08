@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -9,19 +10,18 @@
 #include <iterator>
 #include <map>
 #include <vector>
-#include <chrono>
 
 const size_t TOPK = 10;
 
 using Counter = std::map<std::string, std::size_t>;
 
-std::string tolower(const std::string &str);
+std::string tolower(const std::string& str);
 
 void count_words(std::istream& stream, Counter&);
 
 void print_topk(std::ostream& stream, const Counter&, const size_t k);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc < 2) {
         std::cerr << "Usage: topk_words [FILES...]\n";
         return EXIT_FAILURE;
@@ -44,18 +44,16 @@ int main(int argc, char *argv[]) {
     std::cout << "Elapsed time is " << elapsed_ms.count() << " us\n";
 }
 
-std::string tolower(const std::string &str) {
+std::string tolower(const std::string& str) {
     std::string lower_str;
-    std::transform(std::cbegin(str), std::cend(str),
-                   std::back_inserter(lower_str),
+    std::transform(std::cbegin(str), std::cend(str), std::back_inserter(lower_str),
                    [](unsigned char ch) { return std::tolower(ch); });
     return lower_str;
 };
 
 void count_words(std::istream& stream, Counter& counter) {
-    std::for_each(std::istream_iterator<std::string>(stream),
-                  std::istream_iterator<std::string>(),
-                  [&counter](const std::string &s) { ++counter[tolower(s)]; });    
+    std::for_each(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>(),
+                  [&counter](const std::string& s) { ++counter[tolower(s)]; });
 }
 
 void print_topk(std::ostream& stream, const Counter& counter, const size_t k) {
@@ -65,14 +63,11 @@ void print_topk(std::ostream& stream, const Counter& counter, const size_t k) {
         words.push_back(it);
     }
 
-    std::partial_sort(
-        std::begin(words), std::begin(words) + k, std::end(words),
-        [](auto lhs, auto &rhs) { return lhs->second > rhs->second; });
+    std::partial_sort(std::begin(words), std::begin(words) + k, std::end(words),
+                      [](auto lhs, auto& rhs) { return lhs->second > rhs->second; });
 
-    std::for_each(
-        std::begin(words), std::begin(words) + k,
-        [&stream](const Counter::const_iterator &pair) {
-            stream << std::setw(4) << pair->second << " " << pair->first
-                      << '\n';
-        });
+    std::for_each(std::begin(words), std::begin(words) + k,
+                  [&stream](const Counter::const_iterator& pair) {
+                      stream << std::setw(4) << pair->second << " " << pair->first << '\n';
+                  });
 }
