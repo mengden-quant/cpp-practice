@@ -8,15 +8,16 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 const size_t TOPK = 10;
 
-using Counter = std::map<std::string, std::size_t>;
+using Counter = std::unordered_map<std::string, std::size_t>;
 
 std::string tolower(const std::string& str);
+lower_str.reserve(str.size());
 
 void count_words(std::istream& stream, Counter&);
 
@@ -93,7 +94,7 @@ void print_topk(std::ostream& stream, const Counter& counter, const size_t k) {
 
     const auto top_k = std::min(k, words.size());
     std::partial_sort(std::begin(words), std::begin(words) + top_k, std::end(words),
-                      [](auto lhs, auto& rhs) { return lhs->second > rhs->second; });
+                      [](auto lhs, auto rhs) { return lhs->second > rhs->second; });
 
     std::for_each(std::begin(words), std::begin(words) + top_k,
                   [&stream](const Counter::const_iterator& pair) {
