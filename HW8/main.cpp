@@ -16,9 +16,9 @@ void replaceLastFourBytes(std::vector<char>& data, uint32_t value) {
 /**
  * @brief Ищет комбинацию последних 4 байт, при которой CRC32 изменённого
  * вектора совпадает с CRC32 оригинального вектора
- * @details Перебирает значения в диапазоне [begin, end). Для каждого значения
- * формирует данные original + injection + 4 байта и сравнивает их CRC32
- * с CRC32 оригинального вектора
+ * @details CRC32 неизменяемого префикса original + injection вычисляется
+ * один раз. При переборе кандидатов CRC32 продолжается из сохраненного
+ * состояния только для последних 4 байт.
  * @param original оригинальный вектор
  * @param injection строка, добавляемая после данных оригинального вектора
  * @param begin начало диапазона поиска, включительно
@@ -39,9 +39,14 @@ std::optional<std::vector<char>> hack(const std::vector<char>& original,
     if (end > rangeEnd) {
         end = rangeEnd;
     }
+    const auto prefixSize = result.size() - 4;
+    const uint32_t prefixCrc = crc32(result.data(), prefixSize);
+    const uint32_t prefixState = ~prefixCrc;
+
     for (std::uint64_t i = begin; i < end; ++i) {
-        replaceLastFourBytes(result, static_cast<std::uint32_t>(i));
-        auto currentCrc32 = crc32(result.data(), result.size());
+        const uint32_t candidate = static_cast<uint32_t>(i);
+        replaceLastFourBytes(result, candidate);
+        auto currentCrc32 = crc32(result.data() + result.size() - 4, 4, prefixState);
 
         if (currentCrc32 == originalCrc32) {
             return result;
